@@ -19,6 +19,11 @@ So this library brings exactly that - integration with `@preact\signal-core` lib
 your Stencil components. Only requirement is to decorate `render()` method of your component with `@Preactive()`
 decorator and for each value change of signal/computed value used in your `render()` method, DOM will be updated.
 
+Why? Because we can! Do you need it? Well, probably not, Stencil already has a decent reactivity system. What we believe 
+that Stencil is missing in terms of reactivity is better integration with [RxJS](https://rxjs.dev/) library. However, we
+have compiled some of our commonly used functions in experimental library 
+[@runopencode/rx-stencil](https://github.com/RunOpenCode/rx-stencil) which you can use to tackle more advanced tasks.
+
 ## Example
 
 ```typescript jsx
