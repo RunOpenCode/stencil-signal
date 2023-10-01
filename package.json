@@ -1,6 +1,6 @@
 {
     "name": "@runopencode/stencil-signal",
-    "version": "0.3.0",
+    "version": "0.3.1ß",
     "description": "Integration of @preact/signals-core into Stencil.",
     "keywords": [
         "stencil",
