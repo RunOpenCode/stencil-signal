@@ -37,13 +37,11 @@ let disposeCallback: WeakMap<ComponentInterface, () => void> = new WeakMap();
 let lastRender: WeakMap<ComponentInterface, any> = new WeakMap();
 
 /**
- * Check if the given component has an effect already running.
+ * Here we store if the component is initialized.
  *
  * {@internal}
  */
-function hasEffect(target: ComponentInterface): boolean {
-    return disposeCallback.has(target);
-}
+let initialized: WeakMap<ComponentInterface, boolean> = new WeakMap();
 
 /**
  * Set the dispose callback for the given component.
@@ -66,9 +64,9 @@ function setDisposeCallback(target: ComponentInterface, disposeFn: () => void): 
  *
  * {@internal}
  */
-function getLastRender(target: ComponentInterface, renderFn: () => any): any {
+function getLastRender(target: ComponentInterface): any {
     if (!lastRender.has(target)) {
-        return renderFn();
+        throw new Error('Last render result does not exist.');
     }
 
     let result: any = lastRender.get(target);
@@ -77,6 +75,15 @@ function getLastRender(target: ComponentInterface, renderFn: () => any): any {
     lastRender.delete(target);
 
     return result;
+}
+
+/**
+ * Check if the given component has a last render result.
+ *
+ * {@internal}
+ */
+function hasLastRender(target: ComponentInterface): boolean {
+    return lastRender.has(target);
 }
 
 /**
@@ -90,6 +97,11 @@ function setLastRender(target: ComponentInterface, result: any): void {
  * Clear effect on disconnect.
  */
 function clearOnDisconnect(target: ComponentInterface): void {
+    // already initialized disconnect callback
+    if (initialized.has(target)) {
+        return;
+    }
+
     let originalDisconnectedCallback: () => void = target.disconnectedCallback;
 
     target.disconnectedCallback = function (): void {
@@ -105,7 +117,13 @@ function clearOnDisconnect(target: ComponentInterface): void {
         originalDisconnectedCallback.call(this);
 
         target.disconnectedCallback = originalDisconnectedCallback;
+
+        // clear initialized flag
+        initialized.delete(target);
     };
+
+    // mark component as initialized
+    initialized.set(target, true);
 }
 
 /**
@@ -120,23 +138,32 @@ export function Preactive(): MethodDecorator {
         let previousFn: (...arg: any[]) => any = descriptor.value;
 
         descriptor.value = function decoratedOriginalFunction(...arg: any[]): any {
-            // effect is already running, so we just call the original function,
-            // or we will use last result if invocation comes from the effect.
-            if (hasEffect(this)) {
-                getLastRender(this, (): any => previousFn.call(this, ...arg));
+            // render is invoked by effect, render result already exists,
+            // so we just need to deliver it, signals graph is already
+            // established properly.
+            if (hasLastRender(this)) {
+                return getLastRender(this);
             }
 
-            // set effect dispose callback
+            // render is invoked by Stenciljs, we need to establish signals
+            // effect graph and invoke render to get the result.
+            let scheduleUpdate: boolean = false;
+
             setDisposeCallback(this, effect((): void => {
                 setLastRender(this, previousFn.call(this, ...arg));
-                forceUpdate(this);
+                if (scheduleUpdate) {
+                    forceUpdate(this);
+                    return;
+                }
+
+                scheduleUpdate = true;
             }));
-            
-            // clear effect on disconnect
+
+            // make sure to clear effect on disconnect
             clearOnDisconnect(this);
 
-            // invoke original function
-            return getLastRender(this, (): any => previousFn.call(this, ...arg));
+            // return last render result
+            return getLastRender(this);
         };
 
         return descriptor;
