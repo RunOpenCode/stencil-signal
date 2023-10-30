@@ -3,12 +3,12 @@ import {
     signal,
     Signal,
 }                    from '@preact/signals-core';
-import { Preactive } from '@runopencode/stencil-signal';
 import {
     Component,
     ComponentInterface,
     h,
 }                    from '@stencil/core';
+import { Preactive } from '@runopencode/stencil-signal';
 
 @Component({
     tag:    'signal-component',

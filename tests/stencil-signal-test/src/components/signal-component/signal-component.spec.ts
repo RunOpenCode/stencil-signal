@@ -1,19 +1,36 @@
-import { newSpecPage }     from '@stencil/core/testing';
+import {
+    newSpecPage,
+    SpecPage,
+}                          from '@stencil/core/testing';
 import { SignalComponent } from './signal-component';
 
 describe('signal-component', (): void => {
 
-    it('renders with values', async (): Promise<void> => {
-        let {root} = await newSpecPage({
+    it('renders with initial values.', async (): Promise<void> => {
+        let page: SpecPage = await newSpecPage({
             components: [SignalComponent],
-            html:       `<signal-component first="Stencil" last="'Don't call me a framework' JS"></signal-component>`,
+            html:       `<signal-component></signal-component>`,
         });
 
-        expect(root).toEqualHtml(`
-            <signal-component first="Stencil" last="'Don't call me a framework' JS">
+        expect(page.root).toEqualHtml(`
+            <signal-component>
                 <mock:shadow-root>
                     <div>
-                        Hello, World! I'm Stencil 'Don't call me a framework' JS
+                        Counter: 0, double: 0
+                    </div>
+                </mock:shadow-root>
+            </signal-component>
+        `);
+
+        page.root.shadowRoot.querySelector('div').click();
+
+        await page.waitForChanges();
+
+        expect(page.root).toEqualHtml(`
+            <signal-component>
+                <mock:shadow-root>
+                    <div>
+                        Counter: 1, double: 2
                     </div>
                 </mock:shadow-root>
             </signal-component>

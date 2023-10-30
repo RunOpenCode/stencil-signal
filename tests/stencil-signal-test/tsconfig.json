@@ -8,18 +8,15 @@
             "dom",
             "es2017"
         ],
+        "baseUrl": ".",
         "moduleResolution": "node",
         "module": "esnext",
         "target": "es2017",
         "noUnusedLocals": true,
         "noUnusedParameters": true,
+        "resolveJsonModule": false,
         "jsx": "react",
-        "jsxFactory": "h",
-        "paths": {
-            "@runopencode/stencil-signal": [
-                "./../../dist/index.js"
-            ]
-        }
+        "jsxFactory": "h"
     },
     "include": [
         "src"

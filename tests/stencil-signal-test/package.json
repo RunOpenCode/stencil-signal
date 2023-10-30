@@ -1,7 +1,7 @@
 {
     "name": "stencil-signal-test",
     "version": "0.0.1",
-    "description": "Stencil Component Starter",
+    "description": "Integration test for stencil signal",
     "main": "dist/index.cjs.js",
     "module": "dist/index.js",
     "es2015": "dist/esm/index.js",
@@ -10,17 +10,10 @@
     "collection": "dist/collection/collection-manifest.json",
     "collection:main": "dist/collection/index.js",
     "unpkg": "dist/stencil-signal-test/stencil-signal-test.esm.js",
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/ionic-team/stencil-component-starter.git"
-    },
     "files": [
         "dist/",
         "loader/"
     ],
-    "jest": {
-        "preset": "./jest-preset.js"
-    },
     "scripts": {
         "start": "stencil build --dev --watch --serve",
         "test": "stencil test --spec --e2e",
@@ -28,7 +21,7 @@
         "generate": "stencil generate"
     },
     "dependencies": {
-        "@stencil/core": "^3.0"
+        "@stencil/core": "^4.0"
     },
     "devDependencies": {
         "@types/jest": "^27.5.2",

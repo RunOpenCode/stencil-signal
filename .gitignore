@@ -1,5 +1,10 @@
 .stencil/*
 dist/*
 loader/*
-node_modules/
+node_modules/*
 www/*
+tests/*/.stencil/*
+tests/*/dist/*
+tests/*/node_modules/*
+tests/*/loader/*
+tests/*/www/*
